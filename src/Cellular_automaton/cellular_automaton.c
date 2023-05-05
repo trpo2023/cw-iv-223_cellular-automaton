@@ -1,7 +1,51 @@
 #include "cellular_automaton.h"
-#include <stdlib.h>
+
 #include <stdio.h>
-Cellular_automaton* create_simple_automaton( int h,int l)
+#include <stdlib.h>
+
+
+Cellular_automaton* create_automaton(
+    int height,
+    int length,
+    int count_to_die_min,
+    int count_to_die_max,
+    int count_to_new_min,
+    int count_to_new_max,
+    int environment)//1 для окружения Фон Неймана 2 для вулфиша и все остальные для Мура
+{
+    Cellular_automaton* new_automaton
+            = (Cellular_automaton*)malloc(sizeof(Cellular_automaton));
+    new_automaton->length = length;
+    new_automaton->height = height;
+    new_automaton->count_to_die_min = count_to_die_min;
+    new_automaton->count_to_die_max = count_to_die_max;
+    new_automaton->count_to_new_min = count_to_new_min;
+    new_automaton->count_to_new_max = count_to_new_max;
+    new_automaton->environment = environment;
+    if (!new_automaton) {
+        return NULL;
+    }
+
+    new_automaton->matrix = (int**)malloc(height * sizeof(int*));
+    if (!(new_automaton->matrix)) {
+        free(new_automaton);
+        return NULL;
+    }
+    for (int i = 0; i < height; i++) {
+        new_automaton->matrix[i] = (int*)malloc(length * sizeof(int));
+        if (!(new_automaton->matrix[i])) {
+            free_automaton(new_automaton);
+            return NULL;
+        }
+        for (int j = 0; j < length; j++) {
+            new_automaton->matrix[i][j] = 0;
+        }
+    }
+
+    return new_automaton;
+}
+
+Cellular_automaton* create_simple_automaton(int h, int l)
 {
     Cellular_automaton* new_automaton
             = (Cellular_automaton*)malloc(sizeof(Cellular_automaton));
@@ -27,9 +71,8 @@ Cellular_automaton* create_simple_automaton( int h,int l)
             free_automaton(new_automaton);
             return NULL;
         }
-        for(int j = 0; j<l; j++)
-        {
-           new_automaton->matrix[i][j] = 0;
+        for (int j = 0; j < l; j++) {
+            new_automaton->matrix[i][j] = 0;
         }
     }
 
@@ -62,9 +105,8 @@ Cellular_automaton* copy_automaton(Cellular_automaton* cell)
             free_automaton(new_automaton);
             return NULL;
         }
-        for(int j = 0; j<cell->length; j++)
-        {
-           new_automaton->matrix[i][j] = cell->matrix[i][j];
+        for (int j = 0; j < cell->length; j++) {
+            new_automaton->matrix[i][j] = cell->matrix[i][j];
         }
     }
 
@@ -73,67 +115,94 @@ Cellular_automaton* copy_automaton(Cellular_automaton* cell)
 
 int alive_or_dead(int x, int y, Cellular_automaton* cell)
 {
-   int c_next;
-   if(cell->environment == 1)
-   {
-       c_next = 0;
-   }
-   else
-   {
-       c_next = Moore(x,y,cell);
-   }
-   if(cell->matrix[x][y] == 0)
-   {
-       if(c_next>=cell->count_to_new_min && c_next<= cell->count_to_new_max)
-          return 1;
-       else
-          return 0;
-   }
-   else
-   {
-       if(c_next>=cell->count_to_die_min && c_next<= cell->count_to_die_max)
-          return 1;
-       else
-          return 0;
-   }
+    int c_next;
+    if (cell->environment == 1) {
+        c_next = Von_Neumann(x, y, cell);
+    } else {
+        if (cell->environment == 2)
+            c_next = Wolfish(x, y, cell);
+        else
+            c_next = Moore(x, y, cell);
+    }
+    if (cell->matrix[x][y] == 0) {
+        if (c_next >= cell->count_to_new_min
+            && c_next <= cell->count_to_new_max)
+            return 1;
+        else
+            return 0;
+    } else {
+        if (c_next >= cell->count_to_die_min
+            && c_next <= cell->count_to_die_max)
+            return 1;
+        else
+            return 0;
+    }
 }
 
 Cellular_automaton* next_frame(Cellular_automaton* cell)
 {
-   Cellular_automaton* tmp = copy_automaton(cell);  
-   for(int i = 0; i<cell->height; i++)
-   { 
-     for(int j = 0; j<cell->length ; j++)
-       {
-         cell->matrix[i][j] = alive_or_dead(i,j,tmp);
-       }
-   }
-   free(tmp);
-   return cell;
+    Cellular_automaton* tmp = copy_automaton(cell);
+    for (int i = 0; i < cell->height; i++) {
+        for (int j = 0; j < cell->length; j++) {
+            cell->matrix[i][j] = alive_or_dead(i, j, tmp);
+        }
+    }
+    free(tmp);
+    return cell;
 }
 
 int Moore(int x, int y, Cellular_automaton* cell)
 {
     int c_next = 0;
-    if(x-1>=0)
-    {
-       if(y-1>=0)
-          c_next += cell->matrix[x-1][y-1];
-       c_next += cell->matrix[x-1][y];
-       if(y+1<cell->length)
-          c_next += cell->matrix[x-1][y+1];
+    if (x - 1 >= 0) {
+        if (y - 1 >= 0)
+            c_next += cell->matrix[x - 1][y - 1];
+        c_next += cell->matrix[x - 1][y];
+        if (y + 1 < cell->length)
+            c_next += cell->matrix[x - 1][y + 1];
     }
-    if(y-1>=0)
-       c_next += cell->matrix[x][y-1];
-    if(y+1<cell->length)
-       c_next += cell->matrix[x][y+1];
-    if(x+1<cell->height)
-    {
-       if(y-1>=0)
-          c_next += cell->matrix[x+1][y-1];
-       c_next += cell->matrix[x+1][y];
-       if(y+1<cell->length)
-          c_next += cell->matrix[x+1][y+1];
+    if (y - 1 >= 0)
+        c_next += cell->matrix[x][y - 1];
+    if (y + 1 < cell->length)
+        c_next += cell->matrix[x][y + 1];
+    if (x + 1 < cell->height) {
+        if (y - 1 >= 0)
+            c_next += cell->matrix[x + 1][y - 1];
+        c_next += cell->matrix[x + 1][y];
+        if (y + 1 < cell->length)
+            c_next += cell->matrix[x + 1][y + 1];
+    }
+    return c_next;
+}
+
+int Von_Neumann(int x, int y, Cellular_automaton* cell)
+{
+    int c_next = 0;
+    if (x - 1 >= 0)
+        c_next += cell->matrix[x - 1][y];
+    if (y - 1 >= 0)
+        c_next += cell->matrix[x][y - 1];
+    if (y + 1 < cell->length)
+        c_next += cell->matrix[x][y + 1];
+    if (x + 1 < cell->height)
+        c_next += cell->matrix[x + 1][y];
+    return c_next;
+}
+
+int Wolfish(int x, int y, Cellular_automaton* cell)
+{
+    int c_next = 0;
+    if (x - 1 >= 0) {
+        if (y - 1 >= 0)
+            c_next += cell->matrix[x - 1][y - 1];
+        if (y + 1 < cell->length)
+            c_next += cell->matrix[x - 1][y + 1];
+    }
+    if (x + 1 < cell->height) {
+        if (y - 1 >= 0)
+            c_next += cell->matrix[x + 1][y - 1];
+        if (y + 1 < cell->length)
+            c_next += cell->matrix[x + 1][y + 1];
     }
     return c_next;
 }
