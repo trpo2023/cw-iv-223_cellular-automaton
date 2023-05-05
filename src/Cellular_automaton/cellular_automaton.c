@@ -147,7 +147,7 @@ Cellular_automaton* next_frame(Cellular_automaton* cell)
             cell->matrix[i][j] = alive_or_dead(i, j, tmp);
         }
     }
-    free(tmp);
+    free_automaton(tmp);
     return cell;
 }
 
