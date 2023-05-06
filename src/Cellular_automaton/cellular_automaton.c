@@ -3,16 +3,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 Cellular_automaton* create_automaton(
-    int height,
-    int length,
-    int count_to_die_min,
-    int count_to_die_max,
-    int count_to_new_min,
-    int count_to_new_max,
-    int environment)//1 для окружения Фон Неймана 2 для вулфиша и все остальные для Мура
+        int height,
+        int length,
+        int count_to_die_min,
+        int count_to_die_max,
+        int count_to_new_min,
+        int count_to_new_max,
+        int environment) // 1 для окружения Фон Неймана 2 для вулфиша и все
+                         // остальные для Мура
 {
+    if (height < 0 || length < 0)
+        return NULL;
     Cellular_automaton* new_automaton
             = (Cellular_automaton*)malloc(sizeof(Cellular_automaton));
     new_automaton->length = length;
@@ -47,6 +49,8 @@ Cellular_automaton* create_automaton(
 
 Cellular_automaton* create_simple_automaton(int h, int l)
 {
+    if (h < 0 || l < 0)
+        return NULL;
     Cellular_automaton* new_automaton
             = (Cellular_automaton*)malloc(sizeof(Cellular_automaton));
     new_automaton->length = l;
@@ -115,6 +119,8 @@ Cellular_automaton* copy_automaton(Cellular_automaton* cell)
 
 int alive_or_dead(int x, int y, Cellular_automaton* cell)
 {
+    if (x < 0 || y < 0 || cell->height < x || cell->length < y)
+        return 0;
     int c_next;
     if (cell->environment == 1) {
         c_next = Von_Neumann(x, y, cell);
@@ -151,8 +157,17 @@ Cellular_automaton* next_frame(Cellular_automaton* cell)
     return cell;
 }
 
+void change_state(int x, int y, Cellular_automaton* cell)
+{
+    if (x < 0 || y < 0 || cell->height < x || cell->length < y)
+        return;
+    cell->matrix[x][y] = !cell->matrix[x][y];
+}
+
 int Moore(int x, int y, Cellular_automaton* cell)
 {
+    if (x < 0 || y < 0 || cell->height < x || cell->length < y)
+        return 0;
     int c_next = 0;
     if (x - 1 >= 0) {
         if (y - 1 >= 0)
@@ -177,6 +192,8 @@ int Moore(int x, int y, Cellular_automaton* cell)
 
 int Von_Neumann(int x, int y, Cellular_automaton* cell)
 {
+    if (x < 0 || y < 0 || cell->height < x || cell->length < y)
+        return 0;
     int c_next = 0;
     if (x - 1 >= 0)
         c_next += cell->matrix[x - 1][y];
@@ -191,6 +208,8 @@ int Von_Neumann(int x, int y, Cellular_automaton* cell)
 
 int Wolfish(int x, int y, Cellular_automaton* cell)
 {
+    if (x < 0 || y < 0 || cell->height < x || cell->length < y)
+        return 0;
     int c_next = 0;
     if (x - 1 >= 0) {
         if (y - 1 >= 0)
