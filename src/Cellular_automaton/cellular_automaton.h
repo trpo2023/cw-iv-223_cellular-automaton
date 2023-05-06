@@ -9,17 +9,17 @@ typedef struct {
     int count_to_new_min;
     int count_to_new_max;
     int environment;
-    
+
 } Cellular_automaton;
 
 Cellular_automaton* create_automaton(
-    int length,
-    int height,
-    int count_to_die_min,
-    int count_to_die_max,
-    int count_to_new_min,
-    int count_to_new_max,
-    int environment);
+        int length,
+        int height,
+        int count_to_die_min,
+        int count_to_die_max,
+        int count_to_new_min,
+        int count_to_new_max,
+        int environment);
 Cellular_automaton* create_simple_automaton(int l, int h);
 Cellular_automaton* copy_automaton(Cellular_automaton* cell);
 int alive_or_dead(int x, int y, Cellular_automaton* cell);
