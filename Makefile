@@ -9,7 +9,13 @@ test: bin/matrix_test
 bin/matrix_test: obj/src/test/matrix_test.o obj/src/test/main.o obj/src/Cellular_automaton/libcell.a
 	gcc $(CFLAGS) -o $@ $^ -lm
 
+bin/input_user_interface_test: obj/src/test/input_user_interface_tests.o obj/src/test/main.o obj/src/Cellular_automaton/libcell.a
+	gcc $(CFLAGS) -o $@ $^
+
 obj/src/test/matrix_test.o: test/matrix_test.c 
+	gcc -c $(CFLAGS) $(CPPFLAGS) -I src -I thirdparty -o $@ $<
+
+obj/src/test/input_user_interface_tests.o: test/input_user_interface_tests.c
 	gcc -c $(CFLAGS) $(CPPFLAGS) -I src -I thirdparty -o $@ $<
 
 obj/src/test/main.o: test/main.c
