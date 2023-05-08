@@ -1,33 +1,38 @@
 #include <stdio.h>
 
 #include <Cellular_automaton/cellular_automaton.h>
+#include <Input/input_user_interface.h>
 
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
 
-int main()
+int main(int argc, char* argv[])
 {
-    int h = 30, l = 60, ctdn = 2, ctdx = 3, ctnn = 3, ctnx = 3, env = 0;
-    printf("Use custom settings (y/n)?");
-    char yn = 'y';
-    scanf("%c", &yn);
-    if (yn == 'y') {
-        printf("enter height: ");
-        scanf("%d", &h);
-        printf("enter length: ");
-        scanf("%d", &l);
-        printf("enter min cells to die: ");
-        scanf("%d", &ctdn);
-        printf("enter max cells to die: ");
-        scanf("%d", &ctdx);
-        printf("enter min cells to new cell: ");
-        scanf("%d", &ctnn);
-        printf("enter max cells to new cell: ");
-        scanf("%d", &ctnx);
-        printf("enter type of environmnt: ");
-        scanf("%d", &env);
+    if (check_num_of_arguments(argc)) {
+        printf("%sError:%s too few arguments\n\n", RED, RESET);
+        printf("usage: ./bin/cellular-automaton %s-<environment> ", PURPLE);
+        printf("<min_to_new> <max_to_new> <min_to_die> ");
+        printf("<max_to_die> <length> <height>\n\n");
+        return 1;
     }
+
+    int env = get_environmnt(argv);
+
+    int ctnn = cell_rules_check(MIN_TO_NEW_IND, env, argv);
+    int ctnx = cell_rules_check(MAX_TO_NEW_IND, env, argv);
+    int ctdn = cell_rules_check(MIN_TO_DIE_IND, env, argv);
+    int ctdx = cell_rules_check(MAX_TO_DIE_IND, env, argv);
+
+    int l = atoi(argv[6]);
+    int h = atoi(argv[7]);
+
+    int error_code = get_error_code(env, ctnn, ctnx, ctdn, ctdx, l, h);
+    if (error_code) {
+        print_error(error_code);
+        return 1;
+    }
+
     Cellular_automaton* cell
             = create_automaton(h, l, ctdn, ctdx, ctnn, ctnx, env);
     time_t t;
