@@ -19,4 +19,7 @@ jobs:
         run: make test
         
       - name: matrix_test
-        run: ./bin/matrix_test           
+        run: ./bin/matrix_test
+
+      - name: input_user_interface_test
+        run: ./bin/input_user_interface_test
