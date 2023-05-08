@@ -4,7 +4,7 @@ CPPFLAGS = -MMD
 bin/main: obj/src/main/main.o obj/src/Cellular_automaton/libcell.a
 	gcc $(CFLAGS) -o $@ $^ -lm
 
-test: bin/matrix_test
+test: bin/matrix_test bin/input_user_interface_test
 
 bin/matrix_test: obj/src/test/matrix_test.o obj/src/test/main.o obj/src/Cellular_automaton/libcell.a
 	gcc $(CFLAGS) -o $@ $^ -lm
