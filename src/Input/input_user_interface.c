@@ -36,8 +36,8 @@ int cell_rules_check(int rule_ind, int env, char* argv[])
         if (rule_range > 4 || rule_range < 0)
             return -1;
     } else // для окрестности moore
-        if (rule_range > 8 || rule_range < 0)
-            return -1;
+            if (rule_range > 8 || rule_range < 0)
+        return -1;
     return rule_range;
 }
 
