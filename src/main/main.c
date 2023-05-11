@@ -2,16 +2,18 @@
 
 #include <Cellular_automaton/cellular_automaton.h>
 #include <Input/input_user_interface.h>
+#include <Screen/graphical-output.h>
 
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include <ncurses.h>
 
 int main(int argc, char* argv[])
 {
     if (check_num_of_arguments(argc)) {
         printf("%sError:%s too few arguments\n\n", RED, RESET);
-        printf("usage: ./bin/cellular-automaton %s-<environment> ", PURPLE);
+        printf("  usage: ./bin/cellular-automaton %s-<environment> ", PURPLE);
         printf("<min_to_new> <max_to_new> <min_to_die> ");
         printf("<max_to_die> <length> <height>\n\n");
         return 1;
@@ -35,35 +37,43 @@ int main(int argc, char* argv[])
 
     Cellular_automaton* cell
             = create_automaton(h, l, ctdn, ctdx, ctnn, ctnx, env);
-    time_t t;
-    int n = 10;
-    printf("enter number of frames: ");
-    scanf("%d", &n);
-    srand((unsigned)time(&t));
-    for (int i = 0; i < cell->height; i++) {
-        for (int j = 0; j < cell->length; j++) {
-            cell->matrix[i][j] = rand() % 2;
-            printf("%d ", cell->matrix[i][j]);
-        }
-        printf("\n");
-    }
-    usleep(100);
-    for (int k = 0; k < n; k++) {
-        usleep(200000);
-        system("clear");
-        printf("\n");
-        cell = next_frame(cell);
 
-        for (int i = 0; i < cell->height; i++) {
-            for (int j = 0; j < cell->length; j++) {
-                if (cell->matrix[i][j])
-                    printf("\033[41m%c\033[0m", ' ');
-                else
-                    printf("\033[37m%c\033[0m", ' ');
-            }
-            printf("\n");
-        }
+    int win_l= l+2;
+    int win_h= h+2;
+    int term_l, term_h;
+    
+    initscr();
+    getmaxyx(stdscr, term_h, term_l); // получаем размер терминала
+    
+    if (win_size_check(term_h, term_l, win_l, win_h)) {
+    	endwin();
+        printf("%sError:%s field size exceeds terminal size\n\n", RED, RESET);
+        printf("  maximum allowable %s<length>%s: %s%d%s\n\n", PURPLE, RESET, GREEN, term_l-2, RESET);
+        printf("  maximum allowable %s<width>%s: %s%d%s\n\n", PURPLE, RESET, GREEN, term_h-4, RESET);
+        return 1;
     }
+    
+    noecho(); // не отображать ввод с клавиатуры
+    halfdelay(5); // оживание ввода с клавиатуры определенное время, если ничего не было введено за это время возвращает -1
+    curs_set(0); // убирает курсор терминала
+    start_color();
+    init_pair(LIVE_CELL, COLOR_GREEN, COLOR_GREEN);
+       
+    WINDOW* win=  window_init(term_h, term_l, win_l, win_h);
+    print_legend(term_h, ctnn, ctnx, ctdn, ctdx); 			
+    
+    srand(time(NULL));
+    for (int i = 0; i < cell->height; i++)
+        for (int j = 0; j < cell->length; j++)
+            cell->matrix[i][j] = rand() % 2;
+    
+    while(getch()!= 27) // 27= ESC_key
+    {
+    	cell = next_frame(cell);
+    	print_matrix(win, cell);
+    }
+    
     free_automaton(cell);
+    endwin();
     return 0;
 }
