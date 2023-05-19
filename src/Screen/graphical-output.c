@@ -37,7 +37,7 @@ void print_legend(
     printw(" cellular automaton\t");
     printw("rules_to_new [%d, %d] ", min_to_new, max_to_new);
     printw("rules_to_die [%d, %d] ", min_to_die, max_to_die);
-    mvprintw(term_h - 1, 1, "<ESC> - exit");
+    mvprintw(term_h - 1, 1, "<ESC> - exit   <p>/<SPACE> - pause/play   <e> - edit/normal mode");
     refresh();
 }
 

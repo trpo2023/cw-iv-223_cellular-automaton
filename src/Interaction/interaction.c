@@ -1,22 +1,38 @@
 #include <ncurses.h>
 #include <Interaction/interaction.h>
 
-_Bool is_pause_check(_Bool is_pause, char key)
+_Bool is_pause_check(_Bool is_pause, _Bool is_edit, char key)
 {
-	if(key== 'p' || key== ' ')
+	if(!is_edit)
 	{
-		if(is_pause)
-			return 0;
-		return 1;
-	}
+		if(key== 'p' || key== ' ')
+		{
+			if(is_pause)
+				return 0;
+			return 1;
+		}
+	}	
 	return is_pause;
 }
 
-void print_pause(WINDOW* win, int temp_l)
+void print_mode(WINDOW* win, int term_l, int term_h, _Bool is_pause, _Bool is_edit)
 {
 	wattron(win, COLOR_PAIR(MESSANGE));
-	mvprintw(0, temp_l-8 , "[PAUSE]");
-	wattroff(win, COLOR_PAIR(MESSANGE));
+	if(is_pause)
+	{
+		if(is_edit)
+		{
+			mvprintw(0, term_l-12 , "[edit_mode]");
+			mvprintw(term_h-1, term_l-24,  "<s> - cell state change");
+		}
+		else
+			mvprintw(0, term_l-12 , "    [PAUSE]");
+	}
+	else
+	{
+		mvprintw(0, term_l-12 , "     [PLAY]");
+		mvprintw(term_h-1, term_l-40, "                                       ");
+	}
 	refresh();
 }
 
@@ -37,4 +53,33 @@ _Bool is_edit_mode_check(_Bool is_pause, _Bool is_edit, char key)
 	}
 	return is_edit;
 }
-	
+
+coordinates cursor_movement(int key, coordinates cur, int win_h, int win_l)
+{
+	if(key== KEY_DOWN && cur.y<win_h-3)
+ 			cur.y++;   	
+ 		if(key== KEY_UP && cur.y>0)
+ 			cur.y--;
+ 		if(key== KEY_RIGHT && cur.x<win_l-3)
+ 			cur.x++;
+ 		if(key== KEY_LEFT && cur.x>0)
+ 			cur.x--;
+ 	return cur;
+}
+
+int** cell_state_change(int key, coordinates cur, int **matrix, WINDOW* win)
+{
+	if(key== 's') 
+	{
+		if(matrix[cur.y][cur.x])
+			matrix[cur.y][cur.x]= 0;
+		else
+			matrix[cur.y][cur.x]= 1;	
+	}
+	if(matrix[cur.y][cur.x])
+		wattron(win, COLOR_PAIR(LIVE_CELL_BACK));
+	mvwprintw(win,cur.y+1, cur.x+1, "0");
+	wattroff(win, COLOR_PAIR(LIVE_CELL_BACK));
+ 	wrefresh(win);
+ 	return matrix; 
+ }
