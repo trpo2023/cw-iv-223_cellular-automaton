@@ -32,7 +32,7 @@ obj/src/test/main.o: test/main.c
 obj/src/main/main.o: src/main/main.c
 	gcc -c $(CFLAGS) $(CPPFLAGS) -I src -o $@ $<
 #библиотека
-obj/src/Cellular_automaton/libcell.a: obj/src/Cellular_automaton/cellular_automaton.o obj/src/Input/input_user_interface.o obj/src/Screen/graphical-output.o
+obj/src/Cellular_automaton/libcell.a: obj/src/Cellular_automaton/cellular_automaton.o obj/src/Input/input_user_interface.o obj/src/Screen/graphical-output.o obj/src/Interaction/interaction.o
 	ar rcs $@ $^
 
 obj/src/Cellular_automaton/cellular_automaton.o: src/Cellular_automaton/cellular_automaton.c
@@ -43,7 +43,11 @@ obj/src/Input/input_user_interface.o: src/Input/input_user_interface.c
 
 obj/src/Screen/graphical-output.o: src/Screen/graphical-output.c
 	gcc -c $(CFLAGS) $(CPPFLAGS) -I src -o $@ $< -lncurses
-       	
+	
+obj/src/Interaction/interaction.o: src/Interaction/interaction.c
+	gcc -c $(CFLAGS) $(CPPFLAGS) -I src -o $@ $< -lncurses
+	
+	
 clean:
 	rm obj/*/*/*.[oad] bin/*
 
