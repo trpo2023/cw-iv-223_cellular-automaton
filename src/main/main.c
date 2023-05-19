@@ -3,6 +3,7 @@
 #include <Cellular_automaton/cellular_automaton.h>
 #include <Input/input_user_interface.h>
 #include <Screen/graphical-output.h>
+#include <Interaction/interaction.h>
 
 #include <ncurses.h>
 #include <stdlib.h>
@@ -69,6 +70,7 @@ int main(int argc, char* argv[])
     curs_set(0); // убирает курсор терминала
     start_color();
     init_pair(LIVE_CELL, COLOR_GREEN, COLOR_GREEN);
+    init_pair(MESSANGE, COLOR_MAGENTA, COLOR_BLACK);
 
     WINDOW* win = window_init(term_h, term_l, win_l, win_h);
     print_legend(term_h, ctnn, ctnx, ctdn, ctdx);
@@ -78,9 +80,20 @@ int main(int argc, char* argv[])
         for (int j = 0; j < cell->length; j++)
             cell->matrix[i][j] = rand() % 2;
 
-    while (getch() != 27) // 27= ESC_key
+    char key;
+    _Bool is_pause= 1; //нахождение в паузе
+    _Bool is_edit= 0; //активен ли режим редактирования поля 
+    while (1) // 27= ESC_key
     {
-        cell = next_frame(cell);
+    	key= getch();
+    	is_pause= is_pause_check(is_pause, key);
+    	if(is_exit_check(key))
+    		break;
+    	is_edit= is_edit_mode_check(is_pause, is_edit, key);
+    	if(is_pause)
+    		print_pause(stdscr, term_l);
+    	else
+        	cell = next_frame(cell);
         print_matrix(win, cell);
     }
 
