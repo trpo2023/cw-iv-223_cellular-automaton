@@ -4,10 +4,10 @@
 #include <Input/input_user_interface.h>
 #include <Screen/graphical-output.h>
 
+#include <ncurses.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-#include <ncurses.h>
 
 int main(int argc, char* argv[])
 {
@@ -38,41 +38,52 @@ int main(int argc, char* argv[])
     Cellular_automaton* cell
             = create_automaton(h, l, ctdn, ctdx, ctnn, ctnx, env);
 
-    int win_l= l+2;
-    int win_h= h+2;
+    int win_l = l + 2;
+    int win_h = h + 2;
     int term_l, term_h;
-    
+
     initscr();
     getmaxyx(stdscr, term_h, term_l); // получаем размер терминала
-    
+
     if (win_size_check(term_h, term_l, win_l, win_h)) {
-    	endwin();
+        endwin();
         printf("%sError:%s field size exceeds terminal size\n\n", RED, RESET);
-        printf("  maximum allowable %s<length>%s: %s%d%s\n\n", PURPLE, RESET, GREEN, term_l-2, RESET);
-        printf("  maximum allowable %s<width>%s: %s%d%s\n\n", PURPLE, RESET, GREEN, term_h-4, RESET);
+        printf("  maximum allowable %s<length>%s: %s%d%s\n\n",
+               PURPLE,
+               RESET,
+               GREEN,
+               term_l - 2,
+               RESET);
+        printf("  maximum allowable %s<width>%s: %s%d%s\n\n",
+               PURPLE,
+               RESET,
+               GREEN,
+               term_h - 4,
+               RESET);
         return 1;
     }
-    
-    noecho(); // не отображать ввод с клавиатуры
-    halfdelay(5); // оживание ввода с клавиатуры определенное время, если ничего не было введено за это время возвращает -1
+
+    noecho();     // не отображать ввод с клавиатуры
+    halfdelay(5); // оживание ввода с клавиатуры определенное время, если ничего
+                  // не было введено за это время возвращает -1
     curs_set(0); // убирает курсор терминала
     start_color();
     init_pair(LIVE_CELL, COLOR_GREEN, COLOR_GREEN);
-       
-    WINDOW* win=  window_init(term_h, term_l, win_l, win_h);
-    print_legend(term_h, ctnn, ctnx, ctdn, ctdx); 			
-    
+
+    WINDOW* win = window_init(term_h, term_l, win_l, win_h);
+    print_legend(term_h, ctnn, ctnx, ctdn, ctdx);
+
     srand(time(NULL));
     for (int i = 0; i < cell->height; i++)
         for (int j = 0; j < cell->length; j++)
             cell->matrix[i][j] = rand() % 2;
-    
-    while(getch()!= 27) // 27= ESC_key
+
+    while (getch() != 27) // 27= ESC_key
     {
-    	cell = next_frame(cell);
-    	print_matrix(win, cell);
+        cell = next_frame(cell);
+        print_matrix(win, cell);
     }
-    
+
     free_automaton(cell);
     endwin();
     return 0;
