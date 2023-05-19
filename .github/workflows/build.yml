@@ -23,3 +23,6 @@ jobs:
 
       - name: input_user_interface_test
         run: ./bin/input_user_interface_test
+
+      - name: graphical-output_test
+        run: ./bin/graphical-output_test
