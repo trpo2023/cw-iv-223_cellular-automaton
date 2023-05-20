@@ -23,7 +23,7 @@ void print_mode(WINDOW* win, int term_l, int term_h, _Bool is_pause, _Bool is_ed
 		if(is_edit)
 		{
 			mvprintw(0, term_l-12 , "[edit_mode]");
-			mvprintw(term_h-1, term_l-24,  "<s> - cell state change");
+			mvprintw(term_h-1, term_l-44,  "<c> - clear field   <s> - cell state change");
 		}
 		else
 			mvprintw(0, term_l-12 , "    [PAUSE]");
@@ -83,3 +83,14 @@ int** cell_state_change(int key, coordinates cur, int **matrix, WINDOW* win)
  	wrefresh(win);
  	return matrix; 
  }
+ 
+int** clear_field(char key, int **matrix, int length, int height)
+{
+	if(key== 'c')
+		for(int i= 0; i< length;i++)
+			for(int j= 0; j< height;j++)
+				matrix[j][i]= 0;
+	return matrix;
+}
+		
+	

@@ -15,3 +15,4 @@ _Bool is_exit_check(char key);
 _Bool is_edit_mode_check(_Bool is_pause, _Bool is_edit, char key);
 coordinates cursor_movement(int key, coordinates cur, int win_h, int win_l);
 int** cell_state_change(int key, coordinates cur, int **matrix, WINDOW *win);
+int** clear_field(char key, int **matrix, int length, int height);

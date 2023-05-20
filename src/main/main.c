@@ -106,6 +106,7 @@ int main(int argc, char* argv[])
     	{
     		cur= cursor_movement(key, cur, win_h, win_l);
  		cell->matrix= cell_state_change(key, cur, cell->matrix, win);
+ 		cell->matrix= clear_field(key, cell->matrix, cell->length, cell->height);
     	}
     }
     free_automaton(cell);
