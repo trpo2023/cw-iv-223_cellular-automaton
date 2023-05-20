@@ -26,3 +26,6 @@ jobs:
 
       - name: graphical-output_test
         run: ./bin/graphical-output_test
+      
+      - name: interaction_test  
+        run: ./bin/interaction_test
