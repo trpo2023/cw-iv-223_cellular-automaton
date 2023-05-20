@@ -1,14 +1,14 @@
 #include <stdio.h>
 
-#include <Cellular_automaton/cellular_automaton.h>
-#include <Input/input_user_interface.h>
-#include <Interaction/interaction.h>
-#include <Screen/graphical-output.h>
-
 #include <ncurses.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+
+#include <Cellular_automaton/cellular_automaton.h>
+#include <Input/input_user_interface.h>
+#include <Screen/graphical-output.h>
+#include <Interaction/interaction.h>
 
 int main(int argc, char* argv[])
 {

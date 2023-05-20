@@ -1,7 +1,7 @@
-#include <Interaction/interaction.h>
 #include <ctest.h>
 #include <ncurses.h>
 #include <stdlib.h>
+#include <Interaction/interaction.h>
 
 CTEST(interaction, is_pause_check)
 {

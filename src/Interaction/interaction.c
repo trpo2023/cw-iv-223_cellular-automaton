@@ -1,5 +1,5 @@
-#include <Interaction/interaction.h>
 #include <ncurses.h>
+#include <Interaction/interaction.h>
 
 _Bool is_pause_check(_Bool is_pause, _Bool is_edit, char key)
 {
