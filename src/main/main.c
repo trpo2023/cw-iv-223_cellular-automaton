@@ -1,13 +1,14 @@
 #include <stdio.h>
 
-#include <Cellular_automaton/cellular_automaton.h>
-#include <Input/input_user_interface.h>
-#include <Screen/graphical-output.h>
-
 #include <ncurses.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+
+#include <Cellular_automaton/cellular_automaton.h>
+#include <Input/input_user_interface.h>
+#include <Screen/graphical-output.h>
+#include <Interaction/interaction.h>
 
 int main(int argc, char* argv[])
 {
@@ -64,11 +65,15 @@ int main(int argc, char* argv[])
     }
 
     noecho();     // не отображать ввод с клавиатуры
-    halfdelay(5); // оживание ввода с клавиатуры определенное время, если ничего
+    halfdelay(3); // оживание ввода с клавиатуры определенное время, если ничего
                   // не было введено за это время возвращает -1
     curs_set(0); // убирает курсор терминала
+    keypad(stdscr, 1);
+
     start_color();
     init_pair(LIVE_CELL, COLOR_GREEN, COLOR_GREEN);
+    init_pair(MESSANGE, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(LIVE_CELL_BACK, COLOR_WHITE, COLOR_GREEN);
 
     WINDOW* win = window_init(term_h, term_l, win_l, win_h);
     print_legend(term_h, ctnn, ctnx, ctdn, ctdx);
@@ -78,12 +83,30 @@ int main(int argc, char* argv[])
         for (int j = 0; j < cell->length; j++)
             cell->matrix[i][j] = rand() % 2;
 
-    while (getch() != 27) // 27= ESC_key
-    {
-        cell = next_frame(cell);
-        print_matrix(win, cell);
-    }
+    int key;
+    _Bool is_pause = 1; //нахождение в паузе
+    _Bool is_edit = 0; //активен ли режим редактирования поля
 
+    coordinates cur;
+    cur.x = 0;
+    cur.y = 0;
+    while (1) {
+        key = getch();
+        is_pause = is_pause_check(is_pause, is_edit, key);
+        if (is_exit_check(key))
+            break;
+        is_edit = is_edit_mode_check(is_pause, is_edit, key);
+        print_mode(stdscr, term_l, term_h, is_pause, is_edit);
+        if (!is_pause)
+            cell = next_frame(cell);
+        print_matrix(win, cell);
+        if (is_edit) {
+            cur = cursor_movement(key, cur, win_h, win_l);
+            cell->matrix = cell_state_change(key, cur, cell->matrix, win);
+            cell->matrix = clear_field(
+                    key, cell->matrix, cell->length, cell->height);
+        }
+    }
     free_automaton(cell);
     endwin();
     return 0;
