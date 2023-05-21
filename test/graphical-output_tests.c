@@ -28,13 +28,13 @@ CTEST(graphical_output, win_size_check)
     expected = 0;
     result = win_size_check(term_h, term_l, l, h);
     ASSERT_EQUAL(expected, result);
-    
+
     h = -1;
     l = -1;
     expected = 1;
     result = win_size_check(term_h, term_l, l, h);
     ASSERT_EQUAL(expected, result);
-    
+
     h = 4;
     l = 4;
     expected = 0;
