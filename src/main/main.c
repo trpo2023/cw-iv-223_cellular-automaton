@@ -49,13 +49,13 @@ int main(int argc, char* argv[])
     if (win_size_check(term_h, term_l, win_l, win_h)) {
         endwin();
         printf("%sError:%s field size exceeds terminal size\n\n", RED, RESET);
-        printf("  maximum allowable %s<length>%s: %s%d%s\n\n",
+        printf("  maximum allowable %s<width>%s: %s%d%s\n\n",
                PURPLE,
                RESET,
                GREEN,
                term_l - 2,
                RESET);
-        printf("  maximum allowable %s<width>%s: %s%d%s\n\n",
+        printf("  maximum allowable %s<height>%s: %s%d%s\n\n",
                PURPLE,
                RESET,
                GREEN,
