@@ -1,5 +1,8 @@
 #pragma once
 
+#define WIN_MIN_H 4
+#define WIN_MIN_L 4
+
 #define LIVE_CELL 1
 
 #include <ncurses.h>

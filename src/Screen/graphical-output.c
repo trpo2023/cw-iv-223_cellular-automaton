@@ -5,7 +5,11 @@
 
 _Bool win_size_check(int term_h, int term_l, int l, int h)
 {
+    if (h < WIN_MIN_H)
+        return 1;
     if (term_h < h + 2) // учитываем верхнюю и нижнюю строку
+        return 1;
+    if (l < WIN_MIN_L)
         return 1;
     if (term_l < l)
         return 1;
