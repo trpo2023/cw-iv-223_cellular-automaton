@@ -1,0 +1,31 @@
+name: Build
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check codestyle
+        run: git ls-files *.{c,h} | xargs clang-format -i --verbose && git diff --exit-code
+
+      - name: Build application
+        run: make
+
+      - name: Build test
+        run: make test
+        
+      - name: matrix_test
+        run: ./bin/matrix_test
+
+      - name: input_user_interface_test
+        run: ./bin/input_user_interface_test
+
+      - name: graphical-output_test
+        run: ./bin/graphical-output_test
+      
+      - name: interaction_test  
+        run: ./bin/interaction_test
