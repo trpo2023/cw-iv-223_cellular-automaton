@@ -58,4 +58,4 @@ clean:
 
 .PHONY: clean
 	
--include obj/src/Cellular_automaton/cellular_automaton.d 
+-include obj/src/Cellular_automaton/cellular_automaton.d obj/src/Input/input_user_interface.d obj/src/Screen/graphical-output.d obj/src/Interaction/interaction.d
